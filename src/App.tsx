@@ -34,6 +34,7 @@ function App() {
       <BrowserRouter>
         <div id="links" className="links">
           <nav>
+            {/* <img src="" /> */}
             <ul className="links">
               <li>
                 <Link to="/car" className={`link ${isContrast && "-contrast"}`}>
