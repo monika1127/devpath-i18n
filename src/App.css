@@ -40,3 +40,12 @@
 .read-the-docs {
   color: #888;
 }
+
+.counter {
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+}
+.counter_info {
+  padding: 0 15px;
+}
