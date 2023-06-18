@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "regenerator-runtime/runtime";
 import "./App.css";
 import { BrowserRouter, Route, Link, Routes, Navigate } from "react-router-dom";
@@ -12,24 +12,49 @@ import BikeDetails from "./components/Items/BikeDetails";
 
 function App() {
   const pages = ["bike", "doll", "car"];
+  const [isContrast, setIsContrast] = useState(
+    localStorage.getItem("isContrast") === "true"
+  );
 
   const { transcript } = useSpeechRecognition();
 
   return (
     <>
+      <button
+        onClick={() => {
+          localStorage.setItem("isContrast", !isContrast ? "true" : "false");
+          setIsContrast((prev) => !prev);
+        }}
+        className={`btn ${isContrast && "-contrast"}`}
+      >
+        {isContrast ? "switch to standard" : "switch to contrast"}{" "}
+      </button>
+
       <h1>A11y</h1>
       <BrowserRouter>
         <div id="links" className="links">
           <nav>
-            <ul>
+            <ul className="links">
               <li>
-                <Link to="/car">Car</Link>
+                <Link to="/car" className={`link ${isContrast && "-contrast"}`}>
+                  Car
+                </Link>
               </li>
               <li>
-                <Link to="/bike">Bike</Link>
+                <Link
+                  className={`link ${isContrast && "-contrast"}`}
+                  to="/bike"
+                >
+                  Bike
+                </Link>
               </li>
               <li>
-                <Link to="/doll">Doll</Link>
+                <Link
+                  className={`link ${isContrast && "-contrast"}`}
+                  to="/doll"
+                >
+                  Doll
+                </Link>
               </li>
             </ul>
           </nav>
@@ -47,7 +72,12 @@ function App() {
       </BrowserRouter>
 
       <p id="transcript">Transcript: {transcript}</p>
-      <button onClick={() => SpeechRecognition.startListening()}>Start</button>
+      <button
+        onClick={() => SpeechRecognition.startListening()}
+        className={`btn ${isContrast && "-contrast"}`}
+      >
+        Start
+      </button>
     </>
   );
 }
