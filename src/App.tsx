@@ -1,40 +1,84 @@
-import { useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import "regenerator-runtime/runtime";
 import "./App.css";
-import { Trans, useTranslation } from "react-i18next";
-import LanguageSwitcher from "./components/LanguageSwitcher/LanguageSwitcher";
+import { BrowserRouter, Route, Link, Routes, Navigate } from "react-router-dom";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
+import Home from "./components/Items/Home";
+import CarDetails from "./components/Items/CarDetails";
+import DollDetails from "./components/Items/DollDetails";
+import BikeDetails from "./components/Items/BikeDetails";
 
 function App() {
-  const [count, setCount] = useState(0);
-  const { t, i18n } = useTranslation();
+  const pages = ["bike", "doll", "car"];
+  const [isContrast, setIsContrast] = useState(
+    localStorage.getItem("isContrast") === "true"
+  );
 
-  const today = new Date();
-  const dateOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
+  const { transcript } = useSpeechRecognition();
 
   return (
     <>
-      <h1>i18n</h1>
-      <p>{today.toLocaleDateString(i18n.language, dateOptions)}</p>
-      <p>{t("englishOnly")}</p>
-      <LanguageSwitcher />
-      <div className="card">
-        <div className="counter">
-          <button onClick={() => setCount((count) => count - 1)}>-</button>
-          <p className="counter_info">{count}</p>
-          <button onClick={() => setCount((count) => count + 1)}>+</button>
-        </div>
-        <p>{t("opinions", { count })}</p>
-        <p>{t("englishOnly")}</p>
-        <p>{t(["randomKey", "fallbackKey"])}</p>
+      <button
+        onClick={() => {
+          localStorage.setItem("isContrast", !isContrast ? "true" : "false");
+          setIsContrast((prev) => !prev);
+        }}
+        className={`btn ${isContrast && "-contrast"}`}
+      >
+        {isContrast ? "switch to standard" : "switch to contrast"}{" "}
+      </button>
 
-        <Trans i18nKey="formatted">
-          Translating content with <strong>formatting</strong> or a
-          <a href="https://www.google.com/">link</a> is a pain.
-        </Trans>
-      </div>
+      <h1>A11y</h1>
+      <BrowserRouter>
+        <div id="links" className="links">
+          <nav>
+            {/* <img src="" /> */}
+            <ul className="links">
+              <li>
+                <Link to="/car" className={`link ${isContrast && "-contrast"}`}>
+                  Car
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className={`link ${isContrast && "-contrast"}`}
+                  to="/bike"
+                >
+                  Bike
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className={`link ${isContrast && "-contrast"}`}
+                  to="/doll"
+                >
+                  Doll
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        {transcript && pages.includes(transcript) && (
+          <Navigate to={`/${transcript}`} replace={true} />
+        )}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/car" element={<CarDetails />} />
+          <Route path="/doll" element={<DollDetails />} />
+          <Route path="/bike" element={<BikeDetails />} />
+        </Routes>
+      </BrowserRouter>
+
+      <p id="transcript">Transcript: {transcript}</p>
+      <button
+        onClick={() => SpeechRecognition.startListening()}
+        className={`btn ${isContrast && "-contrast"}`}
+      >
+        Start
+      </button>
     </>
   );
 }
